@@ -6,12 +6,14 @@
 - Gonzalez, Gustavo
 - Gallo Hernández, Luis Guillermo
 
-#### Building
+### Linux
+
+#### Building 
 
 ```sh
 $ cd "Compilador/Primera Entrega"
 $ bison -d Sintactico.y
 $ flex Lexico.l
-$ gcc Sintactico.tab.c lex.yy.c -lfl -o compiler
-$ ./compiler Prueba.txt 
+$ gcc Sintactico.tab.c lex.yy.c -lfl -o Primera
+$ ./Primera Prueba.txt 
 ```
