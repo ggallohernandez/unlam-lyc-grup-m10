@@ -12,13 +12,11 @@ char *yytext;
 
 %}
 
-%token ID
-%token ENTERO
 %token OP_SUMA 
 %token OP_RESTA 
 %token OP_MUL 
 %token OP_DIV  
-%token ASIG 
+%token OP_ASIG 
 %token P_A P_C 
 %token C_MAYOR C_MENOR 
 %token C_NOT 
@@ -38,11 +36,13 @@ char *yytext;
 %token CONST_FLOAT
 %token COMA
 
-
 %%
 
+s: 
+      seleccion
+      ;
 seleccion: 
-    	 IF {printf("     IF\n");}
+    	 T_IF {printf("     IF\n");}
 	;
 
 int main(int argc,char *argv[])
