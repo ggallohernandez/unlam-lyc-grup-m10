@@ -7,6 +7,7 @@ FILE  *yyin;
 int yylval;
 
 %}
+
 %option noyywrap  
 %option yylineno 
 
@@ -16,10 +17,8 @@ CONST_INT               {ENTERO}+
 CONST_FLOAT		        {ENTERO}+"."{ENTERO}+
 CONST_STRING            "({LETRA}|{ENTERO}|.)+"
 T_ID			        {LETRA}({LETRA}|{ENTERO}|_)*
-
-
 CADENA                  ({LETRA}|{ENTERO}|_|\n|\s|\t|\r)*
-COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\{CADENA}/-
+COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-\/{CADENA}\/-{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\/-
 
 %%
 
@@ -35,7 +34,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\{CADENA}/-
 "<"		{ return OP_MAYOR;}
 ">"		{ return OP_MENOR;}
 "NOT"   { return OP_NOT;}
-{T_ID}  { yylval.str_val = yytext; printf( "Identificador en lexico: %s (%s)\n", yytext,yylval.str_val); return T_ID;}
+{T_ID}  { yylval.str_val = yytext; printf( "Identificador en lexico: %s (%s)\n", yytext,yylval.str_val); return ID;}
 "WHILE" { return T_WHILE;}
 "ENDWHILE"  { return T_ENDWHILE;}
 "IF"     	{ return T_IF;}
@@ -46,12 +45,12 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\{CADENA}/-
 "DECVAR"	{ return T_DECVAR;}
 "ENDDECVAR"	{ return T_ENDDECVAR;}
 "AVG"		{ return T_AVG;}
-"STRING"	{ return T_INT;}
-"INT"		{ return T_STRING;}
+"STRING"	{ return T_STRING;}
+"INT"		{ return T_INT;}
 "FLOAT"		{ return T_FLOAT;}
 ","		    { return COMA;}
-{CONST_STRING}      { yylval.str_val = yytext; printf( "String en lexico: %s (%s)\n", yytext,yylval.str_val); return CONST_STRING;}
-{CONST_FLOAT}       { yylval.val = atof(yytext); printf( "Float en lexico: %s (%f)\n", yytext,yylval.val) ; return CONST_FLOAT;}
+{CONST_STRING}      { yylval.str_val = yytext; printf( "String en lexico: %s (%s)\n", yytext,yylval.str_val); return CONST_STR;}
+{CONST_FLOAT}       { yylval.val = atof(yytext); printf( "Float en lexico: %s (%f)\n", yytext,yylval.val) ; return CONST_FL;}
 {CONST_INT}         { yytext,yylval.intval;  printf( "Entero en lexico: %s (%d)\n", yytext,yylval.intval); return ENTERO;}
 
 
