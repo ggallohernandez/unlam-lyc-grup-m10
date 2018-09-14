@@ -1,10 +1,8 @@
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
-#include "y.tab.h"
-FILE  *yyin;
-int yylval;
+#include "Sintactico.tab.h"
 
 %}
 
@@ -22,20 +20,20 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 
 %%
 
-"="     { return OP_ASIG;}
-"+"		{ return OP_SUMA;}
-"-"		{ return OP_RESTA;}
-"*"		{ return OP_MUL;}
-"/"		{ return OP_DIV;}
-"("		{ return P_A;}
-")"		{ return P_C;}
-"["		{ return C_A;}
-"]"		{ return C_C;}
-"<"		{ return OP_MAYOR;}
-">"		{ return OP_MENOR;}
-"NOT"   { return OP_NOT;}
-{T_ID}  { yylval.str_val = yytext; printf( "Identificador en lexico: %s (%s)\n", yytext,yylval.str_val); return ID;}
-"WHILE" { return T_WHILE;}
+"="     	{ return OP_ASIG;}
+"+"			{ return OP_SUMA;}
+"-"			{ return OP_RESTA;}
+"*"			{ return OP_MUL;}
+"/"			{ return OP_DIV;}
+"("			{ return P_A;}
+")"			{ return P_C;}
+"["			{ return C_A;}
+"]"			{ return C_C;}
+"<"			{ return OP_MAYOR;}
+">"			{ return OP_MENOR;}
+"NOT"   	{ return OP_NOT;}
+{T_ID}  	{ yylval.str_val = yytext; printf( "Identificador en lexico: %s (%s)\n", yytext,yylval.str_val); return ID;}
+"WHILE" 	{ return T_WHILE;}
 "ENDWHILE"  { return T_ENDWHILE;}
 "IF"     	{ return T_IF;}
 "ELSE"		{ return T_ELSE;}
@@ -54,7 +52,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 {CONST_INT}         { yytext,yylval.intval;  printf( "Entero en lexico: %s (%d)\n", yytext,yylval.intval); return ENTERO;}
 
 
-"\n"      		
+"\n"	
 "\t"
 
 

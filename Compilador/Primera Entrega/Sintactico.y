@@ -2,20 +2,24 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
-#include "y.tab.h"
 
 int yystopparser=0;
-FILE  *yyin;
 char *yyltext;
 char *yytext;
+
+// stuff from flex that bison needs to know about:
+extern int yylex();
+extern int yyparse();
+extern FILE *yyin;
+
+void yyerror(const char *s);
 
 %}
 
 %union {
-int intval;
-double val;
-char *str_val;
+	int intval;
+	double val;
+	char *str_val;
 }
 
  
@@ -39,54 +43,60 @@ char *str_val;
 %token <int>ENTERO
 %token <str_val>CONST_STR
 %token <double>CONST_FL
-%token COMAA
+%token COMA
 
 %%
 
-programa : asignacion {printf("OK\n");}
+programa : asignacion { printf("OK\n"); }
 
 asignacion: ID OP_ASIG expresion
 ;
 		
 expresion:
-         termino
-	 |expresion OP_RESTA termino {printf("Resta OK\n");}
-       |expresion OP_SUMA termino  {printf("Suma OK\n");}
+	termino
+	|expresion OP_RESTA termino { printf("Resta OK\n"); }
+   	|expresion OP_SUMA termino  { printf("Suma OK\n"); }
 
- 	 ;
+;
 
 termino: 
-       factor
-       |termino OP_MUL factor  {printf("Multiplicacion OK\n");}
-       |termino OP_DIV factor  {printf("Division OK\n");}
-       ;
+	factor
+	|termino OP_MUL factor  { printf("Multiplicacion OK\n"); }
+	|termino OP_DIV factor  { printf("Division OK\n"); }
+;
 
 factor: 
-      ID 
-      | ENTERO {$1 = yylval ;printf("ENTERO es: %d\n", yylval);}
-      |P_A expresion P_C  
-    ;
+	ID 
+	| ENTERO { printf("ENTERO es:\n"); }
+	|P_A expresion P_C  
+;
 
-int main(int argc,char *argv[])
+%%
+
+int main(int argc, char *argv[])
 {
-  if ((yyin = fopen(argv[1], "rt")) == NULL)
-  {
-	printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
-  }
-  else
-  {
+	FILE *pf = fopen(argv[1], "rt");
+
+	if (!pf)
+  	{
+		printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
+		return -1;
+  	}
+  	
+  	yyin = pf;
 	yyparse();
-  }
-  fclose(yyin);
-  return 0;
+  	
+  	fclose(pf);
+
+  	return 0;
 }
-int yyerror(void)
-     {
-       printf("Syntax Error\n");
-	 system ("Pause");
-	 exit (1);
-     }
 
+void yyerror(const char *s)
+{
+	printf("Syntax Error\n");
+	printf("Press a key to continue ... ");
+	getchar();
 
-
+	exit(-1);
+}
 
