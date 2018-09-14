@@ -12,7 +12,7 @@
 
 ```sh
 $ cd "Compilador/Primera Entrega"
-$ bison -d Sintactico.y
+$ bison -dyv Sintactico.y
 $ flex Lexico.l
 $ gcc Sintactico.tab.c lex.yy.c -lfl -o Primera
 $ ./Primera Prueba.txt 
