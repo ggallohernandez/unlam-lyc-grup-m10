@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Sintactico.tab.h"
+#include "y.tab.h"
 
 %}
 
