@@ -72,9 +72,10 @@ bloque_def: sentencia_def
 	| bloque_def sentencia_def
 ;
 
-sentencia_def: asignacion_def;
+sentencia_def: asignacion_def 
+;
 
-asignacion_def: lista_ids ':' T_FLOAT
+asignacion_def: lista_ids ':' T_FLOAT 
 	| lista_ids ':' T_STRING
 	| lista_ids ':' T_INT
 ;
@@ -84,6 +85,7 @@ lista_ids: lista_ids ',' ID
 ; 
 
 defvar: T_DEFVAR bloque_def T_ENDDEFVAR
+;
 
 while : T_WHILE '(' expresion_cond ')' bloque T_ENDWHILE;
 
@@ -104,12 +106,15 @@ termino_comp:
 
 factor_comp:
 	ID
+	| ENTERO
+	| CONST_FL
 	| CONST_BOOL
 	'(' expresion_cond ')'
 ;
 
 
 asignacion: ID '=' asignacion
+	| ID '=' CONST_STR
 	| ID '=' expresion
 ;
 		

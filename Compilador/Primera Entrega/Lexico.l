@@ -15,7 +15,7 @@ CONST_INT               {ENTERO}+
 CONST_FLOAT		        {ENTERO}+\.{ENTERO}+
 CONST_STRING            \"{CADENA}\"
 T_ID			        {LETRA}({LETRA}|{ENTERO}|\_)*
-CADENA                  ({LETRA}|{ENTERO}|\.|\:|\;\-|\_|\!|_|\n|\s|\t|\r)*
+CADENA                  ({LETRA}|{ENTERO}|\.|\:|\;\-|\_|\!|_|" "|\n|\s|\t|\r)*
 COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-\/{CADENA}\/-{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\/-
 
 %%
@@ -35,7 +35,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ">="		|
 "<="		|
 "=="		|
-"!"			{ return OP_COMPARADOR; }
+"!"			{ printf("OP_COMPARADOR"); return OP_COMPARADOR; }
 "true"		|
 "false"		{ printf("bool"); return CONST_BOOL; }
 "AND"		{ printf("AND"); return OP_OR; }
