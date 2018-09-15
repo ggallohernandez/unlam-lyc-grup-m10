@@ -47,28 +47,43 @@ void yyerror(const char *s);
 
 %%
 
-programa : asignacion { printf("OK\n"); }
+programa: bloque;
 
-asignacion: ID OP_ASIG expresion
+bloque: sentencia
+	| bloque sentencia
+;
+
+sentencia: if
+	| asignacion
+;
+
+if : T_IF '(' expresion ')' '{' bloque '}' T_ELSE '{' bloque '}'
+	| T_IF '(' expresion ')' T_ELSE '{' bloque '}'
+	| T_IF '(' expresion ')'
+;
+
+asignacion: ID '=' asignacion
+	| ID '=' expresion
 ;
 		
 expresion:
 	termino
-	|expresion OP_RESTA termino { printf("Resta OK\n"); }
-   	|expresion OP_SUMA termino  { printf("Suma OK\n"); }
+	| expresion '-' termino { printf("Resta OK\n"); }
+   	| expresion '+' termino  { printf("Suma OK\n"); }
 
 ;
 
 termino: 
 	factor
-	|termino OP_MUL factor  { printf("Multiplicacion OK\n"); }
-	|termino OP_DIV factor  { printf("Division OK\n"); }
+	| termino '*' factor  { printf("Multiplicacion OK\n"); }
+	| termino '/' factor  { printf("Division OK\n"); }
 ;
 
 factor: 
 	ID 
 	| ENTERO { printf("ENTERO es:\n"); }
-	|P_A expresion P_C  
+	| CONST_FL
+	| '(' expresion ')'
 ;
 
 %%
