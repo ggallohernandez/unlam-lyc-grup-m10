@@ -1,5 +1,30 @@
-IF 
+WRITE "Inicio!"
 
+DEFVAR
+	a1, b1 : FLOAT
+	var1   : STRING
+	p1, p2 : INT
+ENDEF
 
+p1 = 2
+p2 = 1
 
+WHILE (p1 > 0)
+{
+	IF (p1 < p2)
+	{
+		var1 = "p1 es menor a p2"
+	} ELSE {
+		IF (p1 > p2)
+		{
+			var1 = "p1 es mayor a p2"
+		} ELSE {
+			var1 = "p1 es igual p2"	
+		}
+	}
+
+	WRITE var1
+}
+
+WRITE "Fin!"
 
