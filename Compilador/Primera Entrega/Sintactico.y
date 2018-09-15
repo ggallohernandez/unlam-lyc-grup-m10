@@ -22,13 +22,6 @@ void yyerror(const char *s);
 	char *str_val;
 }
 
- 
-%token OP_SUMA 
-%token OP_RESTA 
-%token OP_MUL 
-%token OP_DIV 
-%token OP_ASIG 
-%token P_A P_C
 %token T_WHILE T_ENDWHILE 
 %token T_IF T_ELSE T_ENDIF
 %token T_WRITE T_READ 
@@ -37,13 +30,10 @@ void yyerror(const char *s);
 %token T_INT 
 %token T_STRING 
 %token T_FLOAT
-%token C_A C_C
-%token OP_MAYOR OP_MENOR OP_NOT
 %token <str_val>ID
 %token <int>ENTERO
 %token <str_val>CONST_STR
 %token <double>CONST_FL
-%token COMA
 
 %%
 
@@ -70,7 +60,6 @@ expresion:
 	termino
 	| expresion '-' termino { printf("Resta OK\n"); }
    	| expresion '+' termino  { printf("Suma OK\n"); }
-
 ;
 
 termino: 
