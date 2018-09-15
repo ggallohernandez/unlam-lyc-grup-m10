@@ -1,4 +1,4 @@
-WRITE "Inicio!"
+WRITE "Inicio"
 
 DEFVAR
 	a1, b1 : FLOAT
@@ -26,5 +26,5 @@ WHILE (p1 > 0)
 	WRITE var1
 }
 
-WRITE "Fin!"
+WRITE "Fin"
 

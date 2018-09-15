@@ -25,32 +25,89 @@ void yyerror(const char *s);
 %token T_WHILE T_ENDWHILE 
 %token T_IF T_ELSE T_ENDIF
 %token T_WRITE T_READ 
-%token T_DECVAR T_ENDDECVAR 
+%token T_DEFVAR T_ENDDEFVAR 
 %token T_AVG
 %token T_INT 
 %token T_STRING 
 %token T_FLOAT
+%token OP_COMPARADOR
+%token OP_AND OP_OR OP_NOT
 %token <str_val>ID
+%token <bool>CONST_BOOL
 %token <int>ENTERO
 %token <str_val>CONST_STR
 %token <double>CONST_FL
 
 %%
 
-programa: bloque;
+programa: bloque
+;
 
 bloque: sentencia
 	| bloque sentencia
 ;
 
-sentencia: if
+sentencia: defvar
+	| if
+	| while
+	| read
+	| write
 	| asignacion
 ;
 
-if : T_IF '(' expresion ')' '{' bloque '}' T_ELSE '{' bloque '}'
-	| T_IF '(' expresion ')' T_ELSE '{' bloque '}'
-	| T_IF '(' expresion ')'
+read: T_READ ID;
+
+write: T_WRITE ID
+	| T_WRITE CONST_STR
 ;
+
+avg: T_AVG '(' '[' lista_expr ']' ')'
+;
+
+lista_expr: lista_expr expresion ','
+	| expresion
+;
+
+bloque_def: sentencia_def
+	| bloque_def sentencia_def
+;
+
+sentencia_def: asignacion_def;
+
+asignacion_def: lista_ids ':' T_FLOAT
+	| lista_ids ':' T_STRING
+	| lista_ids ':' T_INT
+;
+
+lista_ids: lista_ids ',' ID
+	| ID
+; 
+
+defvar: T_DEFVAR bloque_def T_ENDDEFVAR
+
+while : T_WHILE '(' expresion_cond ')' bloque T_ENDWHILE;
+
+if : T_IF '(' expresion_cond ')' bloque T_ELSE bloque T_ENDIF
+	| T_IF '(' expresion_cond ')' bloque T_ENDIF
+;
+
+expresion_cond: 
+	termino_comp 
+	| expresion_cond OP_COMPARADOR termino_comp
+	| expresion_cond OP_OR termino_comp
+;
+
+termino_comp: 
+	factor_comp
+	| termino_comp OP_AND factor_comp
+;
+
+factor_comp:
+	ID
+	| CONST_BOOL
+	'(' expresion_cond ')'
+;
+
 
 asignacion: ID '=' asignacion
 	| ID '=' expresion
@@ -72,6 +129,7 @@ factor:
 	ID 
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
+	| avg
 	| '(' expresion ')'
 ;
 
@@ -97,7 +155,7 @@ int main(int argc, char *argv[])
 
 void yyerror(const char *s)
 {
-	printf("Syntax Error\n");
+	printf("Syntax Error: %s\n", s);
 	printf("Press a key to continue ... ");
 	getchar();
 
