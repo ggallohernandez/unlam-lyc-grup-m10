@@ -40,15 +40,20 @@ void yyerror(const char *s);
 
 %%
 
-programa: bloque
+programa: bloqueprogram
+;
+
+bloqueprogram: defvar bloque_main
+;
+
+bloque_main: bloque
 ;
 
 bloque: sentencia
 	| bloque sentencia
 ;
 
-sentencia: defvar
-	| if
+sentencia: if
 	| while
 	| read
 	| write
@@ -64,7 +69,7 @@ write: T_WRITE ID
 avg: T_AVG '(' '[' lista_expr ']' ')'
 ;
 
-lista_expr: lista_expr expresion ','
+lista_expr: lista_expr ','  expresion
 	| expresion
 ;
 
@@ -72,10 +77,10 @@ bloque_def: sentencia_def
 	| bloque_def sentencia_def
 ;
 
-sentencia_def: asignacion_def 
-;
+sentencia_def: asignacion_def
+; 
 
-asignacion_def: lista_ids ':' T_FLOAT 
+asignacion_def: lista_ids ':' T_FLOAT
 	| lista_ids ':' T_STRING
 	| lista_ids ':' T_INT
 ;
@@ -100,7 +105,8 @@ expresion_cond:
 ;
 
 termino_comp: 
-	factor_comp
+	factor_bool
+	| factor_comp
 	| termino_comp OP_AND factor_comp
 ;
 
@@ -108,10 +114,11 @@ factor_comp:
 	ID
 	| ENTERO
 	| CONST_FL
-	| CONST_BOOL
 	'(' expresion_cond ')'
 ;
 
+factor_bool: CONST_BOOL
+;
 
 asignacion: ID '=' asignacion
 	| ID '=' CONST_STR
