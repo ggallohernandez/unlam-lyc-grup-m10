@@ -4,7 +4,7 @@ DEFVAR
 	a1, b1 : FLOAT
 	var1   : STRING
 	p1, p2 : INT
-ENDEF
+ENDDEFVAR
 
 p1 = 2
 p2 = 1
