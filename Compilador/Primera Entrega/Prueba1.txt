@@ -1,1 +1,33 @@
-WRITE "Inicio"
+-/ bloque de declaracion /-     
+DEFVAR       
+ a,b : FLOAT
+ c : FLOAT
+ d,e : STRING
+ENDDEFVAR
+
+a = (5 * 8) - z
+WRITE a
+
+WHILE (AVG([2.3]) == 2.3 OR 1==1)
+    b = (5 / a - 2) + 1 
+ENDWHILE
+
+IF (((2 * 1) - 1) == 1 )
+    a = AVG([2,a+b,c*(d+e),48])
+ENDIF
+
+WHILE (b == 1)
+    a = 1
+    IF (X == 10)
+        a = a + 1
+    ENDIF
+ENDWHILE
+
+IF (X != "Holaa    Mundo")
+    Z = X
+ELSE
+    X = Z
+    READ X      -/ lectura de variable -/ READ X /- entrada /-
+ENDIF
+
+WRITE "Compilacion Exitosa"

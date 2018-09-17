@@ -35,6 +35,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ">"			|
 ">="		|
 "<="		|
+"!="        |
 "=="		{ printf("OP_COMPARADOR"); return OP_COMPARADOR; }			
 "true"		|
 "false"		{ printf("BOOL "); return CONST_BOOL; }

@@ -17,6 +17,7 @@ symrec *sym_table;
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
+extern yylineno;
 
 void yyerror(const char *s);
 
@@ -117,11 +118,12 @@ termino_comp:
 	| termino_comp OP_AND factor_comp
 ;
 
-factor_comp:
-	ID
-	| ENTERO
+factor_comp: ID 
+	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
-	'(' expresion_cond ')'
+	| CONST_STR
+	| avg
+	| '(' expresion_cond ')'
 ;
 
 factor_bool: CONST_BOOL
@@ -176,7 +178,7 @@ int main(int argc, char *argv[])
 
 void yyerror(const char *s)
 {
-	printf("Syntax Error: %s\n", s);
+	printf("Syntax Error en linea %d : %s\n", yylineno, s);
 	printf("Press a key to continue ... ");
 	getchar();
 
