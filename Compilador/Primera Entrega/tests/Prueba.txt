@@ -1,13 +1,16 @@
-WRITE "Inicio d"
-
 DEFVAR
 	a1, b1 : FLOAT
 	var1   : STRING
 	p1, p2 : INT
 ENDDEFVAR
 
-p1 = 2
+WRITE "Inicio d"
+
+var1 = "Desconocido"
+p1 = p2 = 2
 p2 = 1
+a1 = b1 = 0
+a1 = 1
 
 WHILE (p1 > 0)
 	IF (p1 < p2)
@@ -20,5 +23,7 @@ WHILE (p1 > 0)
 		ENDIF
 	ENDIF
 	WRITE var1
+ENDWHILE
+
 WRITE "Fin"
 
