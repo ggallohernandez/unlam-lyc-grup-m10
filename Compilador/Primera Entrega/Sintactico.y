@@ -2,10 +2,16 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "symbol_table.h"
+
+#define YYDEBUG 1
 
 int yystopparser=0;
 char *yyltext;
 char *yytext;
+
+/* The symbol table: a chain of 'struct symrec'.  */
+symrec *sym_table;
 
 // stuff from flex that bison needs to know about:
 extern int yylex();
@@ -158,6 +164,8 @@ int main(int argc, char *argv[])
 		return -1;
   	}
   	
+  	yydebug = 1;
+
   	yyin = pf;
 	yyparse();
   	
