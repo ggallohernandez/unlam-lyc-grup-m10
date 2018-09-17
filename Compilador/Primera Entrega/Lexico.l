@@ -12,7 +12,7 @@
 ENTERO      			[0-9]
 LETRA		        	[a-zA-Z]
 CONST_INT               {ENTERO}+
-CONST_FLOAT		        {ENTERO}+\.{ENTERO}+
+CONST_FLOAT		        {ENTERO}+\.{ENTERO}*|{ENTERO}*\.{ENTERO}+
 CONST_STRING            \"{CADENA}\"
 T_ID			        {LETRA}({LETRA}|{ENTERO}|\_)*
 CADENA                  ({LETRA}|{ENTERO}|\.|\:|\;\-|\_|\!|_|" "|\n|\s|\t|\r)*
@@ -35,12 +35,14 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ">"			|
 ">="		|
 "<="		|
-"=="		|
-"!"			{ printf("OP_COMPARADOR"); return OP_COMPARADOR; }
+"=="		{ printf("OP_COMPARADOR"); return OP_COMPARADOR; }			
 "true"		|
 "false"		{ printf("BOOL "); return CONST_BOOL; }
-"AND"		{ printf("AND "); return OP_OR; }
-"OR"		{ printf("OR "); return OP_AND; }
+"&&"		|
+"AND"		{ printf("AND "); return OP_AND; }
+"||"		|
+"OR"		{ printf("OR "); return OP_OR; }
+"!"			|
 "NOT"   	{ printf("NOT "); return OP_NOT; }
 "WHILE" 	{ printf("WHILE "); return T_WHILE; }
 "ENDWHILE"  { printf("ENDWHILE \n"); return T_ENDWHILE; }
