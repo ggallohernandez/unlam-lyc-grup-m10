@@ -15,7 +15,7 @@ CONST_INT               {ENTERO}+
 CONST_FLOAT		        {ENTERO}+\.{ENTERO}*|{ENTERO}*\.{ENTERO}+
 CONST_STRING            \"{CADENA}\"
 T_ID			        {LETRA}({LETRA}|{ENTERO}|\_)*
-CADENA                  ({LETRA}|{ENTERO}|\.|\:|\;\-|\_|\!|_|" "|\n|\s|\t|\r)*
+CADENA                  ({LETRA}|{ENTERO}|\.|\:|\;\-|\_|\!|_|" "|\n|\s|\t|\r|\@|\%\º)*
 COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-\/{CADENA}\/-{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-\/-
 
 %%
