@@ -29,6 +29,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ")"			|
 "["			|
 "]"			|
+":"			|
 ","			{ return yytext[0]; }
 "<"			|
 ">"			|

@@ -1,0 +1,5 @@
+DEFVAR
+	a1, b1 : FLOAT
+	var1   : STRING
+	p1, p2 : INT
+ENDDEFVAR
