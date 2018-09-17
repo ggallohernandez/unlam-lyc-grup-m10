@@ -3,3 +3,5 @@ DEFVAR
 	var1   : STRING
 	p1, p2 : INT
 ENDDEFVAR
+
+p1 = 1

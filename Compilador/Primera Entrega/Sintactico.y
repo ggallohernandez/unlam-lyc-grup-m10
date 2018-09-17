@@ -41,6 +41,7 @@ void yyerror(const char *s);
 %%
 
 programa: bloqueprogram
+	| bloque_main
 ;
 
 bloqueprogram: defvar bloque_main
