@@ -25,5 +25,7 @@ WHILE (p1 > 0)
 	WRITE var1
 ENDWHILE
 
+b1 = AVG([2.3, 1.22])
+
 WRITE "Fin"
 
