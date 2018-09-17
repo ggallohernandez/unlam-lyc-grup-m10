@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "y.tab.h"
-
+int isValidInt(int );
+int createSymbolTable();
 %}
 
 %option noyywrap  
@@ -61,9 +62,42 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 {T_ID}  	{ printf("ID "); yylval.str_val = yytext; return ID; }
 {CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); return CONST_STR; }
 {CONST_FLOAT}       { printf("CONST_FLOAT \n"); yylval.val = atof(yytext); return CONST_FL; }
-{CONST_INT}         { printf("CONT_INT \n"); yytext,yylval.intval; return ENTERO; }
+{CONST_INT}         { 
+        if(isValidInt(atoi(yytext))==1)
+        {
+            return ENTERO;
+        }
+        else
+        {
+            yyerror("Error. Entero fuera de rango.\n");
+        }
+    }
 
 "\n"	
 "\t"
 {COMENTARIOS}
 
+%%
+int isValidInt(int entero)
+{
+    printf("Entero %d\n",entero); 
+	if(entero >= 0 && entero <= 65535)
+    {
+		printf("CONT_INT \n"); 
+        return 1; 
+	}
+    return 0;
+}
+
+int createSymbolTable(){
+	FILE *pf; 
+	int i;
+	pf = fopen("ts.txt","w"); 
+
+	if (!pf)
+		return 0;
+
+	fclose(pf); 
+
+	return 1;
+}
