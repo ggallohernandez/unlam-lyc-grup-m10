@@ -129,9 +129,9 @@ factor_comp: ID
 factor_bool: CONST_BOOL
 ;
 
-asignacion: ID '=' asignacion
-	| ID '=' CONST_STR
-	| ID '=' expresion
+asignacion: lista_ids '=' asignacion
+	| lista_ids '=' CONST_STR
+	| lista_ids '=' expresion
 ;
 		
 expresion:
