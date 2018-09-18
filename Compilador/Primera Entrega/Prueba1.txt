@@ -12,7 +12,7 @@ WHILE (AVG([2.3]) == 2.3 OR 1==1)
     b = (5 / a - 2) + 1 
 ENDWHILE
 
-IF (((2 * 1) - 1) == 1 )
+IF (1 == 1 )
     a = AVG([2,a+b,c*(d+e),48])
 ENDIF
 

@@ -118,6 +118,8 @@ termino_comp:
 	| termino_comp OP_AND factor_comp
 ;
 
+// si agregamos factor aca, se genera ambiguedad con los parentesis de expresion con expresion_cond
+// ahora en una condicion no se puede resolver expresiones matematicas
 factor_comp: ID 
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL

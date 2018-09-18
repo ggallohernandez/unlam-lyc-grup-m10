@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "y.tab.h"
 int isValidInt(int );
+int isValidFloat(double );
 int createSymbolTable();
 %}
 
@@ -61,8 +63,20 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 "WRITE"		{ printf("WRITE"); return T_WRITE; }
 {T_ID}  	{ printf("ID "); yylval.str_val = yytext; return ID; }
 {CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); return CONST_STR; }
-{CONST_FLOAT}       { printf("CONST_FLOAT \n"); yylval.val = atof(yytext); return CONST_FL; }
+{CONST_FLOAT}       { 
+        yylval.val = atof(yytext);
+		if(isValidFloat(atof(yytext))==1)
+        {
+            return CONST_FL;
+        }
+        else
+        {
+            yyerror("Error. Flotante fuera de rango.\n");
+        }
+    }
+        
 {CONST_INT}         { 
+        yylval.val = atoi(yytext);
         if(isValidInt(atoi(yytext))==1)
         {
             return ENTERO;
@@ -80,10 +94,22 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 %%
 int isValidInt(int entero)
 {
-    printf("Entero %d\n",entero); 
 	if(entero >= 0 && entero <= 65535)
     {
+        //Si no existe guardar en tabla de simbolos aca
 		printf("CONT_INT \n"); 
+        return 1; 
+	}
+    return 0;
+}
+
+int isValidFloat(double num)
+{
+    printf("Flotante  %f",num);
+	if(num >= FLT_MIN && num <= FLT_MAX )
+    {
+        //Si no existe guardar en tabla de simbolos aca
+		printf("CONST_FLOAT \n"); 
         return 1; 
 	}
     return 0;
