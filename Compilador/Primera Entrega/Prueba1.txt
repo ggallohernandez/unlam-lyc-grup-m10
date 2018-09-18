@@ -8,7 +8,7 @@ ENDDEFVAR
 a = (5 * 8) - z
 WRITE a
 
-WHILE (AVG([2.3]) == 2.3 OR 1==1)
+WHILE (AVG([2.3]) == 2.3 OR 1 == 1)
     b = (5 / a - 2) + 1 
 ENDWHILE
 

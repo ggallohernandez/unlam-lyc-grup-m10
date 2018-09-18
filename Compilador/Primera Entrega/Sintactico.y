@@ -17,7 +17,7 @@ symrec *sym_table;
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
-extern yylineno;
+extern int yylineno;
 
 void yyerror(const char *s);
 
@@ -39,6 +39,7 @@ void yyerror(const char *s);
 %token T_FLOAT
 %token OP_COMPARADOR
 %token OP_AND OP_OR OP_NOT
+%token OP_GE OP_LE OP_NE OP_EQ  
 %token <str_val>ID
 %token <bool>CONST_BOOL
 %token <int>ENTERO
@@ -100,58 +101,44 @@ lista_ids: lista_ids ',' ID
 defvar: T_DEFVAR bloque_def T_ENDDEFVAR
 ;
 
-while : T_WHILE '(' expresion_cond ')' bloque T_ENDWHILE;
+while : T_WHILE '(' expresion ')' bloque T_ENDWHILE;
 
-if : T_IF '(' expresion_cond ')' bloque T_ELSE bloque T_ENDIF
-	| T_IF '(' expresion_cond ')' bloque T_ENDIF
+if : T_IF '(' expresion ')' bloque T_ELSE bloque T_ENDIF
+	| T_IF '(' expresion ')' bloque T_ENDIF
 ;
 
-expresion_cond: 
-	termino_comp 
-	| expresion_cond OP_COMPARADOR termino_comp
-	| expresion_cond OP_OR termino_comp
-;
-
-termino_comp: 
-	factor_bool
-	| factor_comp
-	| termino_comp OP_AND factor_comp
-;
-
-// si agregamos factor aca, se genera ambiguedad con los parentesis de expresion con expresion_cond
-// ahora en una condicion no se puede resolver expresiones matematicas
-factor_comp: ID 
-	| ENTERO { printf("ENTERO es:\n"); }
-	| CONST_FL
-	| CONST_STR
-	| avg
-	| '(' expresion_cond ')'
-;
-
-factor_bool: CONST_BOOL
-;
-
-asignacion: lista_ids '=' asignacion
-	| lista_ids '=' CONST_STR
-	| lista_ids '=' expresion
+asignacion: ID '=' asignacion
+	| ID '=' CONST_STR
+	| ID '=' expresion
 ;
 		
 expresion:
 	termino
 	| expresion '-' termino { printf("Resta OK\n"); }
    	| expresion '+' termino  { printf("Suma OK\n"); }
+   	| expresion '<' termino  { printf("LT OK\n"); }
+   	| expresion '>' termino  { printf("GT OK\n"); }
+   	| expresion OP_GE termino  { printf("GE OK\n"); }
+   	| expresion OP_LE termino  { printf("LE OK\n"); }
+   	| expresion OP_NE termino  { printf("NE OK\n"); }
+   	| expresion OP_NE CONST_STR { printf("NE OK\n"); }
+   	| expresion OP_EQ termino  { printf("EQ OK\n"); }
+   	| expresion OP_OR termino  { printf("OR OK\n"); }
+   	| expresion OP_COMPARADOR termino  { printf("COMP OK\n"); }
 ;
 
 termino: 
 	factor
 	| termino '*' factor  { printf("Multiplicacion OK\n"); }
 	| termino '/' factor  { printf("Division OK\n"); }
+	| termino OP_AND factor  { printf("AND OK\n"); }
 ;
 
 factor: 
 	ID 
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
+	| CONST_BOOL
 	| avg
 	| '(' expresion ')'
 ;

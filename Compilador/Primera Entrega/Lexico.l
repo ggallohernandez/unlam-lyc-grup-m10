@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <float.h>
 #include "y.tab.h"
+
+extern void yyerror(const char *s);
+
 int isValidInt(int );
 int isValidFloat(double );
 int createSymbolTable();
@@ -33,13 +36,13 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 "["			|
 "]"			|
 ":"			|
-","			{ return yytext[0]; }
+","			|
 "<"			|
-">"			|
-">="		|
-"<="		|
-"!="        |
-"=="		{ printf("OP_COMPARADOR"); return OP_COMPARADOR; }			
+">"			{ return yytext[0]; }
+">="		{ printf("GE "); return OP_GE; }
+"<="		{ printf("LE "); return OP_LE; }
+"!="        { printf("NE "); return OP_NE; }
+"=="		{ printf("EQ "); return OP_EQ; }			
 "true"		|
 "false"		{ printf("BOOL "); return CONST_BOOL; }
 "&&"		|
