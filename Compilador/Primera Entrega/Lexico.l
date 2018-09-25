@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <float.h>
 #include "y.tab.h"
 #include "symbol_table.h"
@@ -69,13 +70,22 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 "FLOAT"		{ printf("FLOAT "); return T_FLOAT; }
 "WRITE"		{ printf("WRITE"); return T_WRITE; }
 {T_ID}  	{ printf("ID "); yylval.str_val = yytext; 
-                symrec *s;
-                s = getsym(yylval.str_val);
-                if (s == 0)
+                
+                if(strlen(yytext)<=10)
                 {
-                    putsym(yylval.str_val,DT_UNDEFINED);
+                    symrec *s;
+                    s = getsym(yylval.str_val);
+                    if (s == 0)
+                    {
+                        putsym(yylval.str_val,DT_UNDEFINED);
+                    }
+                    return ID;
                 }
-                return ID; }
+                else
+                {
+                    yyerror("Nombre de variable muy extensa, debe ser menor a 10 caracteres \n");
+                }
+            }
 {CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); return CONST_STR; }
 {CONST_FLOAT}       { 
         yylval.val = atof(yytext);
@@ -161,16 +171,14 @@ int createSymbolTable(){
 }
 
 void getAllSymbols(FILE* pf) {
-    int i;
-    i=0;
     printf("\nMostrando tabla de simbolos: \n");
     symrec *ptr;
-
+    char idName[11];
   	for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
     {
-        printf( "%d Nombre: %s, Tipo: %d\n",i,ptr->name,ptr->type);
-        fprintf(pf,"%s %s\n",ptr->name,getDataTypeName(ptr->type));
-        i++;
+        strcpy(idName,"_");
+        printf( "Nombre: %s, Tipo: %d\n",i,ptr->name,ptr->type);
+        fprintf(pf,"%s %s\n",strcat(idName,ptr->name),getDataTypeName(ptr->type));
     }
 }
 
