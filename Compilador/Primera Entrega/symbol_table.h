@@ -12,6 +12,13 @@ struct symrec
   	struct symrec *next;  /* link field */
 };
 
+/*Data types*/
+#define DT_CONST_FL 1
+#define DT_ENTERO 2
+#define DT_CONST_STR 3
+#define DT_CONST_BOOL 4
+#define DT_UNDEFINED 5
+
 typedef struct symrec symrec;
 
 /* The symbol table: a chain of 'struct symrec'.  */

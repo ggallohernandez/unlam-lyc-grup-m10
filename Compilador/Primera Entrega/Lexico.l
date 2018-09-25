@@ -4,12 +4,16 @@
 #include <stdlib.h>
 #include <float.h>
 #include "y.tab.h"
+#include "symbol_table.h"
+#include "symbol_table.c"
 
 extern void yyerror(const char *s);
 
 int isValidInt(int );
 int isValidFloat(double );
 int createSymbolTable();
+void getAllSymbols(FILE*);
+char * getDataTypeName(int);
 %}
 
 %option noyywrap  
@@ -64,12 +68,25 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 "INT"		{ printf("INT "); return T_INT; }
 "FLOAT"		{ printf("FLOAT "); return T_FLOAT; }
 "WRITE"		{ printf("WRITE"); return T_WRITE; }
-{T_ID}  	{ printf("ID "); yylval.str_val = yytext; return ID; }
+{T_ID}  	{ printf("ID "); yylval.str_val = yytext; 
+                symrec *s;
+                s = getsym(yylval.str_val);
+                if (s == 0)
+                {
+                    putsym(yylval.str_val,DT_UNDEFINED);
+                }
+                return ID; }
 {CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); return CONST_STR; }
 {CONST_FLOAT}       { 
         yylval.val = atof(yytext);
 		if(isValidFloat(atof(yytext))==1)
         {
+            symrec *s;
+            s = getsym(yytext);
+            if (s == 0)
+            {
+                putsym(yytext,DT_CONST_FL);
+            }
             return CONST_FL;
         }
         else
@@ -82,13 +99,26 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
         yylval.val = atoi(yytext);
         if(isValidInt(atoi(yytext))==1)
         {
-            return ENTERO;
+                symrec *s;
+                s = getsym(yytext);
+                if (s == 0)
+                {
+                    putsym(yytext,DT_ENTERO);
+                }
+                return ENTERO;
         }
         else
         {
             yyerror("Error. Entero fuera de rango.\n");
         }
     }
+<<EOF>> {
+            if (createSymbolTable()==0)
+            {
+                yyerror("Error al crear tabla de simbolos \n");
+            }
+            yyterminate();
+        }
 
 "\n"	
 "\t"
@@ -120,13 +150,47 @@ int isValidFloat(double num)
 
 int createSymbolTable(){
 	FILE *pf; 
-	int i;
 	pf = fopen("ts.txt","w"); 
-
+    printf("\nCreando tabla de simbolos: \n");
 	if (!pf)
 		return 0;
-
+    getAllSymbols(pf);
 	fclose(pf); 
 
 	return 1;
+}
+
+void getAllSymbols(FILE* pf) {
+    int i;
+    i=0;
+    printf("\nMostrando tabla de simbolos: \n");
+    symrec *ptr;
+
+  	for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
+    {
+        printf( "%d Nombre: %s, Tipo: %d\n",i,ptr->name,ptr->type);
+        fprintf(pf,"%s %s\n",ptr->name,getDataTypeName(ptr->type));
+        i++;
+    }
+}
+
+char * getDataTypeName(int value)
+{
+    switch(value)
+    {
+        case 1  :
+            return "CONST_FL";
+            break;
+        case 2  :
+            return "ENTERO";
+            break;
+        case 3  :
+            return "CONST_STR";
+            break;
+        case 4  :
+            return "CONST_BOOL";
+            break;
+        default : 
+            return "DT_UNDEFINED";
+    }
 }
