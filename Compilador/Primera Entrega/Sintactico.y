@@ -22,8 +22,9 @@ extern int yyparse();
 extern FILE *yyin;
 extern int yylineno;
 
-void yyerror(const char *s);
+void yyerror(const char *);
 void setType(int );
+void checkExist(const char *);
 
 %}
 
@@ -75,7 +76,7 @@ sentencia: if
 
 read: T_READ ID;
 
-write: T_WRITE ID
+write: T_WRITE ID { checkExist($2); }
 	| T_WRITE CONST_STR
 ;
 
@@ -139,7 +140,7 @@ termino:
 ;
 
 factor: 
-	ID 
+	ID { checkExist($1); }
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
 	| CONST_BOOL
@@ -193,8 +194,25 @@ void setType(int type)
 		sym = getsym(idName);
 		if(sym!=0)
 		{
-			sym->type=type;
+			if(sym->type==DT_UNDEFINED)
+			{
+				sym->type=type;
+			}
+			else
+			{
+				yyerror("Variable ya declarada anteriormente, \n");
+			}
 		}
 		pop(st);
+	}
+}
+
+void checkExist(const char *s)
+{
+	symrec *sym;
+	sym = getsym(s);
+  	if(sym->type==DT_UNDEFINED)
+	{
+		yyerror("Variable no declarada \n");
 	}
 }
