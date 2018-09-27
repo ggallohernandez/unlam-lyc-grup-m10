@@ -18,6 +18,10 @@ struct symrec
 #define DT_CONST_STR 3
 #define DT_CONST_BOOL 4
 #define DT_UNDEFINED 5
+#define DT_FLOAT 6
+#define DT_INT 7
+#define DT_STRING 8
+#define DT_BOOL 9
 
 typedef struct symrec symrec;
 

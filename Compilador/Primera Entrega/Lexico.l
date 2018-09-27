@@ -177,7 +177,7 @@ void getAllSymbols(FILE* pf) {
   	for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
     {
         strcpy(idName,"_");
-        printf( "Nombre: %s, Tipo: %d\n",i,ptr->name,ptr->type);
+        printf("Nombre: %s, Tipo: %d\n",ptr->name,ptr->type);
         fprintf(pf,"%s %s\n",strcat(idName,ptr->name),getDataTypeName(ptr->type));
     }
 }
@@ -197,6 +197,21 @@ char * getDataTypeName(int value)
             break;
         case 4  :
             return "CONST_BOOL";
+            break;
+        case 5  :
+            return "DT_UNDEFINED";
+            break;
+        case 6  :
+            return "DT_FLOAT";
+            break;
+        case 7  :
+            return "DT_INT";
+            break;
+        case 8  :
+            return "DT_STRING";
+            break;
+        case 9  :
+            return "DT_BOOL";
             break;
         default : 
             return "DT_UNDEFINED";

@@ -2,7 +2,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "symbol_table.h"
+#include "stack.c"
 
 #define YYDEBUG 1
 
@@ -12,6 +14,7 @@ char *yytext;
 
 /* The symbol table: a chain of 'struct symrec'.  */
 symrec *sym_table;
+stack_t *st;
 
 // stuff from flex that bison needs to know about:
 extern int yylex();
@@ -20,6 +23,7 @@ extern FILE *yyin;
 extern int yylineno;
 
 void yyerror(const char *s);
+void setType(int );
 
 %}
 
@@ -89,13 +93,13 @@ bloque_def: sentencia_def
 sentencia_def: asignacion_def
 ; 
 
-asignacion_def: lista_ids ':' T_FLOAT
-	| lista_ids ':' T_STRING
-	| lista_ids ':' T_INT
+asignacion_def: lista_ids ':' T_FLOAT { setType(DT_FLOAT);}
+	| lista_ids ':' T_STRING { setType(DT_STRING);}
+	| lista_ids ':' T_INT { setType(DT_INT);}
 ;
 
-lista_ids: lista_ids ',' ID
-	| ID
+lista_ids: lista_ids ',' ID { push(st,$3);}
+	| ID { push(st,$1);}
 ; 
 
 defvar: T_DEFVAR bloque_def T_ENDDEFVAR
@@ -154,6 +158,8 @@ int main(int argc, char *argv[])
 		printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
 		return -1;
   	}
+	  
+    st = newStack();
   	
   	yydebug = 1;
 
@@ -174,3 +180,21 @@ void yyerror(const char *s)
 	exit(-1);
 }
 
+//En el lexico guarde en la tabla de simbolos los ids 
+//ahora en el sintactico les asigno el tipo  
+void setType(int type)
+{
+	char idName[11]; 
+	symrec *sym;
+
+	while(top(st)!=NULL)
+	{	  
+	    strcpy(idName,top(st));
+		sym = getsym(idName);
+		if(sym!=0)
+		{
+			sym->type=type;
+		}
+		pop(st);
+	}
+}
