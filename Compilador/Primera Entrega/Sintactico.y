@@ -15,6 +15,7 @@ char *yytext;
 /* The symbol table: a chain of 'struct symrec'.  */
 symrec *sym_table;
 stack_t *st;
+stack_t *stIdType;
 
 // stuff from flex that bison needs to know about:
 extern int yylex();
@@ -26,6 +27,7 @@ void yyerror(const char *);
 void setType(int );
 void checkExist(const char *);
 void checkListIDExist(void );
+void verifyTypeOp(void );
 
 %}
 
@@ -113,12 +115,16 @@ if : T_IF '(' expresion ')' bloque T_ELSE bloque T_ENDIF
 	| T_IF '(' expresion ')' bloque T_ENDIF
 ;
 
-asignacion: lista_ids '=' CONST_STR
-	| lista_ids '=' expresion { checkListIDExist(); }
+lista_ids_asig: lista_ids_asig '=' ID { push(st,$3);}
+	| ID { push(st,$1);}
+; 
+
+asignacion: lista_ids_asig '=' CONST_STR  { checkListIDExist(); }
+	| lista_ids_asig '=' expresion { checkListIDExist(); }
 ;		
 
 expresion:
-	termino
+	termino// { verifyTypeOp(); }
 	| expresion '-' termino { printf("Resta OK\n"); }
    	| expresion '+' termino  { printf("Suma OK\n"); }
    	| expresion '<' termino  { printf("LT OK\n"); }
@@ -140,7 +146,7 @@ termino:
 ;
 
 factor: 
-	ID { checkExist($1); }
+	ID { checkExist($1); }//push(stIdType,$1); }
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
 	| CONST_BOOL
@@ -161,6 +167,7 @@ int main(int argc, char *argv[])
   	}
 	  
     st = newStack();
+	stIdType = newStack();
   	
   	yydebug = 1;
 
@@ -223,8 +230,8 @@ void checkListIDExist()
 	symrec *sym;
 
 	while(top(st)!=NULL)
-	{	  
-	    strcpy(idName,top(st));
+	{		
+	    strcpy(idName,top(st));		
 		sym = getsym(idName);
 		if(sym!=0)
 		{
@@ -234,5 +241,33 @@ void checkListIDExist()
 			}
 		}
 		pop(st);
+	}
+}
+
+void verifyTypeOp()
+{
+	char idName[11]; 
+	symrec *sym;
+	int idType;
+
+	strcpy(idName,top(stIdType));
+	sym = getsym(idName);
+	if(sym!=0)
+	{
+		idType=sym->type;
+	}
+
+	while(top(stIdType)!=NULL)
+	{	  
+	    strcpy(idName,top(stIdType));
+		sym = getsym(idName);
+		if(sym!=0)
+		{
+			if(sym->type!=idType)
+			{
+				yyerror("No coinciden el tipo de dato de cada ID de la expresion \n");
+			}
+		}
+		pop(stIdType);
 	}
 }
