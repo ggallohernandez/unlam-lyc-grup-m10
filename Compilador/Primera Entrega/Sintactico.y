@@ -25,6 +25,7 @@ extern int yylineno;
 void yyerror(const char *);
 void setType(int );
 void checkExist(const char *);
+void checkListIDExist(void );
 
 %}
 
@@ -112,11 +113,10 @@ if : T_IF '(' expresion ')' bloque T_ELSE bloque T_ENDIF
 	| T_IF '(' expresion ')' bloque T_ENDIF
 ;
 
-asignacion: ID '=' asignacion
-	| ID '=' CONST_STR
-	| ID '=' expresion
-;
-		
+asignacion: lista_ids '=' CONST_STR
+	| lista_ids '=' expresion { checkListIDExist(); }
+;		
+
 expresion:
 	termino
 	| expresion '-' termino { printf("Resta OK\n"); }
@@ -214,5 +214,25 @@ void checkExist(const char *s)
   	if(sym->type==DT_UNDEFINED)
 	{
 		yyerror("Variable no declarada \n");
+	}
+}
+
+void checkListIDExist()
+{
+	char idName[11]; 
+	symrec *sym;
+
+	while(top(st)!=NULL)
+	{	  
+	    strcpy(idName,top(st));
+		sym = getsym(idName);
+		if(sym!=0)
+		{
+			if(sym->type==DT_UNDEFINED)
+			{
+				yyerror("Variable no declarada \n");
+			}
+		}
+		pop(st);
 	}
 }
