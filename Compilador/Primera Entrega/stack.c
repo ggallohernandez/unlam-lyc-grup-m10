@@ -33,6 +33,7 @@ void destroyStack(struct stack_t **);
 
 typedef struct stack_t stack_t;
 extern stack_t *st;
+extern stack_t *stIdType;
 
 char *copyString(char *str)
 {

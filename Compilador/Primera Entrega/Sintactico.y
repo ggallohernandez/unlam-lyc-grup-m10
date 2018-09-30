@@ -146,7 +146,7 @@ termino:
 ;
 
 factor: 
-	ID { checkExist($1); }//push(stIdType,$1); }
+	ID //{ checkExist($1);} push(stIdType,$1); }
 	| ENTERO { printf("ENTERO es:\n"); }
 	| CONST_FL
 	| CONST_BOOL
@@ -175,7 +175,8 @@ int main(int argc, char *argv[])
 	yyparse();
   	
   	fclose(pf);
-
+	clear(st);
+	clear(stIdType);
   	return 0;
 }
 
@@ -218,6 +219,7 @@ void checkExist(const char *s)
 {
 	symrec *sym;
 	sym = getsym(s);
+	printf("%s  \n\n\n\n\n",s);
   	if(sym->type==DT_UNDEFINED)
 	{
 		yyerror("Variable no declarada \n");
@@ -233,6 +235,8 @@ void checkListIDExist()
 	{		
 	    strcpy(idName,top(st));		
 		sym = getsym(idName);
+		printf("%s  \n\n\n\n\n",idName);
+
 		if(sym!=0)
 		{
 			if(sym->type==DT_UNDEFINED)

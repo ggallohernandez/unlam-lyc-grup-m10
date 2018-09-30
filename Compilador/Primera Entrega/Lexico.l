@@ -86,28 +86,47 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
                     yyerror("Nombre de variable muy extensa, debe ser menor a 10 caracteres \n");
                 }
             }
-{CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); return CONST_STR; }
-{CONST_FLOAT}       { 
-        yylval.val = atof(yytext);
-		if(isValidFloat(atof(yytext))==1)
-        {
-            symrec *s;
-            s = getsym(yytext);
-            if (s == 0)
+{CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); 
+            if(strlen(yytext)<100)
             {
-                putsym(yytext,DT_CONST_FL);
+                symrec *s;
+                s = getsym(yytext);
+                if (s == 0)
+                {
+                    putsym(yytext,DT_CONST_STR);
+                }
+                return CONST_STR;
             }
-            return CONST_FL;
-        }
-        else
-        {
-            yyerror("Error. Flotante fuera de rango.\n");
-        }
+            else
+            {
+                yyerror("Error. Cadena de caracteres supera el maximo.\n");
+            }
+            return CONST_STR; }
+{CONST_FLOAT}       { 
+            float aux;
+            sscanf(yytext,"%f",&aux);
+            yylval.val = aux;
+            if(isValidFloat(aux)==1)
+            {
+                symrec *s;
+                s = getsym(yytext);
+                if (s == 0)
+                {
+                    putsym(yytext,DT_CONST_FL);
+                }
+                return CONST_FL;
+            }
+            else
+            {
+                yyerror("Error. Flotante fuera de rango.\n");
+            }
     }
         
 {CONST_INT}         { 
-        yylval.val = atoi(yytext);
-        if(isValidInt(atoi(yytext))==1)
+        int aux;
+        sscanf(yytext,"%d",&aux);
+        yylval.val = aux;
+        if(isValidInt(aux)==1)
         {
                 symrec *s;
                 s = getsym(yytext);
@@ -130,14 +149,16 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
             yyterminate();
         }
 
-"\n"	
+"\r\n"
+" "
 "\t"
 {COMENTARIOS}
+.           { printf("Caracter invalido!");  exit(1);}
 
 %%
 int isValidInt(int entero)
 {
-	if(entero >= 0 && entero <= 65535)
+	if(entero >= -32768 && entero <= 32767)
     {
         //Si no existe guardar en tabla de simbolos aca
 		printf("CONT_INT \n"); 
