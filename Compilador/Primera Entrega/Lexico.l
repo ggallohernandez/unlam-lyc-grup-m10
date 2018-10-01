@@ -87,7 +87,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
                 }
             }
 {CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); 
-            if(strlen(yytext)<100)
+            if(strlen(yytext)<MAX_STRING)
             {
                 symrec *s;
                 s = getsym(yytext);
@@ -156,6 +156,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 .           { printf("Caracter invalido!");  exit(1);}
 
 %%
+
 int isValidInt(int entero)
 {
 	if(entero >= -32768 && entero <= 32767)
@@ -194,12 +195,12 @@ int createSymbolTable(){
 void getAllSymbols(FILE* pf) {
     printf("\nMostrando tabla de simbolos: \n");
     symrec *ptr;
-    char idName[11];
+    char idName[MAX_STRING];
   	for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
     {
         strcpy(idName,"_");
         printf("Nombre: %s, Tipo: %d\n",ptr->name,ptr->type);
-        fprintf(pf,"%s %s\n",strcat(idName,ptr->name),getDataTypeName(ptr->type));
+        fprintf(pf,"%s %s %d \n",strcat(idName,ptr->name),getDataTypeName(ptr->type),ptr->len);
     }
 }
 

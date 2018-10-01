@@ -8,6 +8,7 @@ symrec * putsym(const char *sym_name, int sym_type)
 	ptr->name = (char *) malloc(strlen(sym_name) + 1);
 	strcpy(ptr->name, sym_name);
 	ptr->type = sym_type;
+	ptr->len = strlen(sym_name);
 	ptr->val = 0; /* Set value to 0 even if fctn.  */
 	ptr->next = (struct symrec *) sym_table;
 	sym_table = ptr;

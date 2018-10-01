@@ -4,6 +4,7 @@ struct symrec
 {
   	char *name;  /* name of symbol */
   	int type;    /* type of symbol */
+  	int len;    /* lenght of symbol */
   	union {
 		int intval;
 		double val;
@@ -22,6 +23,8 @@ struct symrec
 #define DT_INT 7
 #define DT_STRING 8
 #define DT_BOOL 9
+
+#define MAX_STRING 100
 
 typedef struct symrec symrec;
 
