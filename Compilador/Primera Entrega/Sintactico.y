@@ -53,6 +53,8 @@ void verifyTypeOp(void );
 %token <int>ENTERO
 %token <str_val>CONST_STR
 %token <double>CONST_FL
+%left '-' '+'
+%left '*' '/'
 
 %%
 
@@ -152,6 +154,9 @@ factor:
 	| CONST_BOOL
 	| avg
 	| '(' expresion ')'
+	| '-' ID %prec NEG
+	| '-' CONST_FL %prec NEG
+	| '-' ENTERO %prec NEG
 ;
 
 %%
