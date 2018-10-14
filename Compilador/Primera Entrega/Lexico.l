@@ -15,6 +15,9 @@ int isValidFloat(double );
 int createSymbolTable();
 void getAllSymbols(FILE*);
 char * getDataTypeName(int);
+
+#define MAX_STRING 30
+
 %}
 
 %option noyywrap  
@@ -69,102 +72,117 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 "INT"		{ printf("INT "); return T_INT; }
 "FLOAT"		{ printf("FLOAT "); return T_FLOAT; }
 "WRITE"		{ printf("WRITE"); return T_WRITE; }
-{T_ID}  	{ printf("ID "); yylval.str_val = yytext; 
+{T_ID}  	{ 
+    printf("ID "); yylval.str_val = strdup(yytext); 
                 
-                if(strlen(yytext)<=10)
-                {
-                    symrec *s;
-                    s = getsym(yylval.str_val);
-                    if (s == 0)
-                    {
-                        putsym(yylval.str_val,DT_UNDEFINED);
-                    }
-                    return ID;
-                }
-                else
-                {
-                    yyerror("Nombre de variable muy extensa, debe ser menor a 10 caracteres \n");
-                }
-            }
-{CONST_STRING}      { yylval.str_val = yytext; printf("CONST_STR \n"); 
-            if(strlen(yytext)<MAX_STRING)
-            {
-                symrec *s;
-                s = getsym(yytext);
-                if (s == 0)
-                {
-                    putsym(yytext,DT_CONST_STR);
-                }
-                return CONST_STR;
-            }
-            else
-            {
-                yyerror("Error. Cadena de caracteres supera el maximo.\n");
-            }
-            return CONST_STR; }
-{CONST_FLOAT}       { 
-            float aux;
-            sscanf(yytext,"%f",&aux);
-            yylval.val = aux;
-            if(isValidFloat(aux)==1)
-            {
-                symrec *s;
-                s = getsym(yytext);
-                if (s == 0)
-                {
-                    putsym(yytext,DT_CONST_FL);
-                }
-                return CONST_FL;
-            }
-            else
-            {
-                yyerror("Error. Flotante fuera de rango.\n");
-            }
-    }
+    if (strlen(yytext) <= 10)
+    {
+        symrec *s;
+        s = getsym(yylval.str_val);
         
-{CONST_INT}         { 
-        int aux;
-        sscanf(yytext,"%d",&aux);
-        yylval.val = aux;
-        if(isValidInt(aux)==1)
+        if (s == 0)
         {
-                symrec *s;
-                s = getsym(yytext);
-                if (s == 0)
-                {
-                    putsym(yytext,DT_ENTERO);
-                }
-                return ENTERO;
+            putsym(yylval.str_val, DT_UNDEFINED);
         }
-        else
-        {
-            yyerror("Error. Entero fuera de rango.\n");
-        }
+        
+        return ID;
     }
-<<EOF>> {
-            if (createSymbolTable()==0)
-            {
-                yyerror("Error al crear tabla de simbolos \n");
-            }
-            yyterminate();
+    else
+    {
+        yyerror("Nombre de variable muy extensa, debe ser menor a 10 caracteres \n");
+    }
+}
+{CONST_STRING} { 
+    yylval.str_val = strdup(yytext); printf("CONST_STR \n"); 
+
+    if (strlen(yytext) <= MAX_STRING)
+    {
+        symrec *s;
+        s = getsym(yytext);
+
+        if (s == 0)
+        {
+            putsym(yytext,DT_CONST_STR);
+        }
+        
+        return CONST_STR;
+    }
+    else
+    {
+        yyerror("Error. Cadena de caracteres supera el maximo.\n");
+    }
+
+    return CONST_STR; 
+}
+{CONST_FLOAT} { 
+    float aux;
+    sscanf(yytext, "%f", &aux);
+    yylval.val = aux;
+
+    if (isValidFloat(aux) == 1)
+    {
+        symrec *s;
+        s = getsym(yytext);
+        if (s == 0)
+        {
+            putsym(yytext,DT_CONST_FL);
+        }
+        return CONST_FL;
+    }
+    else
+    {
+        yyerror("Error. Flotante fuera de rango.\n");
+    }
+}
+        
+{CONST_INT} { 
+    int aux;
+    sscanf(yytext,"%d",&aux);
+    yylval.val = aux;
+
+    if (isValidInt(aux) == 1)
+    {
+        symrec *s;
+        s = getsym(yytext);
+        
+        if (s == 0)
+        {
+            putsym(yytext, DT_ENTERO);
         }
 
+        return ENTERO;
+    }
+    else
+    {
+        yyerror("Error. Entero fuera de rango.\n");
+    }
+}
+<<EOF>> {
+    if (createSymbolTable() == 0)
+    {
+        yyerror("Error al crear tabla de simbolos \n");
+    }
+
+    yyterminate();
+}
 "\r\n"
 " "
 "\t"
 {COMENTARIOS}
-.           { printf("Caracter invalido!");  exit(1);}
+. { 
+    printf("Caracter invalido!");  exit(1);}
 
 %%
 
 int isValidInt(int entero)
 {
-	if(entero >= -32768 && entero <= 32767)
+	if (entero >= -32768 && entero <= 32767)
     {
         //Si no existe guardar en tabla de simbolos aca
 		printf("CONT_INT \n"); 
         return 1; 
 	}
+
     return 0;
 }
 

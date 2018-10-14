@@ -24,7 +24,7 @@ struct symrec
 #define DT_STRING 8
 #define DT_BOOL 9
 
-#define MAX_STRING 100
+#define MAX_STRING 30
 
 typedef struct symrec symrec;
 

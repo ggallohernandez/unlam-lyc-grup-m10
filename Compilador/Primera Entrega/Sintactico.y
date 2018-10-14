@@ -154,9 +154,9 @@ factor:
 	| CONST_BOOL
 	| avg
 	| '(' expresion ')'
-	| '-' ID %prec NEG
-	| '-' CONST_FL %prec NEG
-	| '-' ENTERO %prec NEG
+	| '-' ID %prec OP_NOT
+	| '-' CONST_FL %prec OP_NOT
+	| '-' ENTERO %prec OP_NOT
 ;
 
 %%
@@ -227,7 +227,10 @@ void checkExist(const char *s)
 	printf("%s  \n\n\n\n\n",s);
   	if(sym->type==DT_UNDEFINED)
 	{
-		yyerror("Variable no declarada \n");
+		char error[256];
+		snprintf(error, sizeof error, "%s %s", s, "Variable no declarada\n");
+
+		yyerror(error);
 	}
 }
 
@@ -246,7 +249,10 @@ void checkListIDExist()
 		{
 			if(sym->type==DT_UNDEFINED)
 			{
-				yyerror("Variable no declarada \n");
+				char error[256];
+				snprintf(error, sizeof error, "%s %s", idName, "Variable no declarada\n");
+
+				yyerror(error);
 			}
 		}
 		pop(st);
