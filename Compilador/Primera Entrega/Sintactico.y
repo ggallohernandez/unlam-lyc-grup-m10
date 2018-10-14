@@ -127,29 +127,29 @@ asignacion: lista_ids_asig '=' CONST_STR  { checkListIDExist(); }
 
 expresion:
 	termino// { verifyTypeOp(); }
-	| expresion '-' termino { printf("Resta OK\n"); }
-   	| expresion '+' termino  { printf("Suma OK\n"); }
-   	| expresion '<' termino  { printf("LT OK\n"); }
-   	| expresion '>' termino  { printf("GT OK\n"); }
-   	| expresion OP_GE termino  { printf("GE OK\n"); }
-   	| expresion OP_LE termino  { printf("LE OK\n"); }
-   	| expresion OP_NE termino  { printf("NE OK\n"); }
-   	| expresion OP_NE CONST_STR { printf("NE OK\n"); }
-   	| expresion OP_EQ termino  { printf("EQ OK\n"); }
-   	| expresion OP_OR termino  { printf("OR OK\n"); }
-   	| expresion OP_COMPARADOR termino  { printf("COMP OK\n"); }
+	| expresion '-' termino
+   	| expresion '+' termino
+   	| expresion '<' termino
+   	| expresion '>' termino
+   	| expresion OP_GE termino
+   	| expresion OP_LE termino
+   	| expresion OP_NE termino
+   	| expresion OP_NE CONST_STR
+   	| expresion OP_EQ termino
+   	| expresion OP_OR termino
+   	| expresion OP_COMPARADOR termino
 ;
 
 termino: 
 	factor
-	| termino '*' factor  { printf("Multiplicacion OK\n"); }
-	| termino '/' factor  { printf("Division OK\n"); }
-	| termino OP_AND factor  { printf("AND OK\n"); }
+	| termino '*' factor
+	| termino '/' factor
+	| termino OP_AND factor
 ;
 
 factor: 
 	ID //{ checkExist($1);} push(stIdType,$1); }
-	| ENTERO { printf("ENTERO es:\n"); }
+	| ENTERO
 	| CONST_FL
 	| CONST_BOOL
 	| avg

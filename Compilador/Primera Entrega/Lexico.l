@@ -47,33 +47,33 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ","			|
 "<"			|
 ">"			{ return yytext[0]; }
-">="		{ printf("GE "); return OP_GE; }
-"<="		{ printf("LE "); return OP_LE; }
-"!="        { printf("NE "); return OP_NE; }
-"=="		{ printf("EQ "); return OP_EQ; }			
+">="		{ return OP_GE; }
+"<="		{ return OP_LE; }
+"!="        { return OP_NE; }
+"=="		{ return OP_EQ; }			
 "true"		|
-"false"		{ printf("BOOL "); return CONST_BOOL; }
+"false"		{ return CONST_BOOL; }
 "&&"		|
-"AND"		{ printf("AND "); return OP_AND; }
+"AND"		{ return OP_AND; }
 "||"		|
-"OR"		{ printf("OR "); return OP_OR; }
+"OR"		{ return OP_OR; }
 "!"			|
-"NOT"   	{ printf("NOT "); return OP_NOT; }
-"WHILE" 	{ printf("WHILE "); return T_WHILE; }
-"ENDWHILE"  { printf("ENDWHILE \n"); return T_ENDWHILE; }
-"IF"     	{ printf("IF "); return T_IF; }
-"ELSE"		{ printf("ELSE "); return T_ELSE; }
-"ENDIF"     { printf("ENDIF "); return T_ENDIF; }
-"READ"		{ printf("READ "); return T_READ; }
-"DEFVAR"	{ printf("DEFVAR "); return T_DEFVAR; }
-"ENDDEFVAR"	{ printf("ENDDEFVAR \n"); return T_ENDDEFVAR; }
-"AVG"		{ printf("AVG "); return T_AVG; }
-"STRING"	{ printf("STRING "); return T_STRING; }
-"INT"		{ printf("INT "); return T_INT; }
-"FLOAT"		{ printf("FLOAT "); return T_FLOAT; }
-"WRITE"		{ printf("WRITE"); return T_WRITE; }
+"NOT"   	{ return OP_NOT; }
+"WHILE" 	{ return T_WHILE; }
+"ENDWHILE"  { return T_ENDWHILE; }
+"IF"     	{ return T_IF; }
+"ELSE"		{ return T_ELSE; }
+"ENDIF"     { return T_ENDIF; }
+"READ"		{ return T_READ; }
+"DEFVAR"	{ return T_DEFVAR; }
+"ENDDEFVAR"	{ return T_ENDDEFVAR; }
+"AVG"		{ return T_AVG; }
+"STRING"	{ return T_STRING; }
+"INT"		{ return T_INT; }
+"FLOAT"		{ return T_FLOAT; }
+"WRITE"		{ return T_WRITE; }
 {T_ID}  	{ 
-    printf("ID "); yylval.str_val = strdup(yytext); 
+    yylval.str_val = strdup(yytext); 
                 
     if (strlen(yytext) <= 10)
     {
@@ -93,7 +93,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
     }
 }
 {CONST_STRING} { 
-    yylval.str_val = strdup(yytext); printf("CONST_STR \n"); 
+    yylval.str_val = strdup(yytext);
 
     if (strlen(yytext) <= MAX_STRING)
     {
@@ -169,8 +169,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 " "
 "\t"
 {COMENTARIOS}
-. { 
-    printf("Caracter invalido!");  exit(1);}
+. { printf("Caracter invalido!");  exit(1);}
 
 %%
 
@@ -178,7 +177,6 @@ int isValidInt(int entero)
 {
 	if (entero >= -32768 && entero <= 32767)
     {
-        //Si no existe guardar en tabla de simbolos aca
 		printf("CONT_INT \n"); 
         return 1; 
 	}
@@ -191,7 +189,6 @@ int isValidFloat(double num)
     printf("Flotante  %f",num);
 	if(num >= FLT_MIN && num <= FLT_MAX )
     {
-        //Si no existe guardar en tabla de simbolos aca
 		printf("CONST_FLOAT \n"); 
         return 1; 
 	}
@@ -211,15 +208,20 @@ int createSymbolTable(){
 }
 
 void getAllSymbols(FILE* pf) {
-    printf("\nMostrando tabla de simbolos: \n");
     symrec *ptr;
     char idName[MAX_STRING];
+
+    fprintf(pf,"\t---------------------------------------------------------------------------------------------------------\n");
+    fprintf(pf,"\t|\t%-30s\t|\t%-20s\t|\t%-32s\t|\t\n","Symbol","Type","Length");
+    fprintf(pf,"\t---------------------------------------------------------------------------------------------------------\n");
+
   	for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
     {
         strcpy(idName,"_");
-        printf("Nombre: %s, Tipo: %d\n",ptr->name,ptr->type);
-        fprintf(pf,"%s %s %d \n",strcat(idName,ptr->name),getDataTypeName(ptr->type),ptr->len);
+        fprintf(pf,"\t|\t%-30s\t|\t%-20s\t|\t%-32d\t|\t\n",strcat(idName,ptr->name),getDataTypeName(ptr->type),ptr->len);
     }
+
+    fprintf(pf,"\t---------------------------------------------------------------------------------------------------------\n");
 }
 
 char * getDataTypeName(int value)
