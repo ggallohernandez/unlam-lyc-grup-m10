@@ -1,3 +1,5 @@
+#ifndef SYMBOL_TABLE_H
+#define SYMBOL_TABLE_H
 
 /* Data type for links in the chain of symbols.  */
 struct symrec
@@ -33,3 +35,5 @@ extern symrec *sym_table;
 
 symrec *putsym (char const *, int);
 symrec *getsym (char const *);
+
+#endif  /* SYMBOL_TABLE_H */  

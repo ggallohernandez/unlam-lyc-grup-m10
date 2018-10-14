@@ -1,7 +1,11 @@
 /Primera
+/Segunda
+/parser
+/Parser
 /*.pdf
 /*.yy.c
 /*.dot
+/*.o
 /*.output
 /*.tab.c
 /*.tab.h
