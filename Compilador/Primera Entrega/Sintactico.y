@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "symbol_table.h"
+#include "queue.h"
+#include "queue.c"
 #include "stack.c"
 
 #define YYDEBUG 1
@@ -16,6 +19,7 @@ char *yytext;
 symrec *sym_table;
 stack_t *st;
 stack_t *stIdType;
+t_queue queue;
 
 // stuff from flex that bison needs to know about:
 extern int yylex();
@@ -33,6 +37,7 @@ void verifyTypeOp(void );
 
 %union {
 	int intval;
+	bool bool_val;
 	double val;
 	char *str_val;
 }
@@ -49,10 +54,10 @@ void verifyTypeOp(void );
 %token OP_AND OP_OR OP_NOT
 %token OP_GE OP_LE OP_NE OP_EQ  
 %token <str_val>ID
-%token <bool>CONST_BOOL
-%token <int>ENTERO
+%token <bool_val>CONST_BOOLEAN
+%token <intval>ENTERO
 %token <str_val>CONST_STR
-%token <double>CONST_FL
+%token <val>CONST_FL
 %left '-' '+'
 %left '*' '/'
 
@@ -149,14 +154,22 @@ termino:
 
 factor: 
 	ID //{ checkExist($1);} push(stIdType,$1); }
-	| ENTERO
-	| CONST_FL
-	| CONST_BOOL
+	| ENTERO  { 
+		char str[16];
+		sprintf(str, "%d", yylval.intval); 
+		enqueue(&queue, str); 
+	}
+	| CONST_FL { 
+		char str[16];
+		sprintf(str, "%.2f", yylval.val); 
+		enqueue(&queue, str); 
+	}
+	| CONST_BOOLEAN { enqueue(&queue, ($1 ? "true" : "false")); }
 	| avg
 	| '(' expresion ')'
-	| '-' ID %prec OP_NOT
-	| '-' CONST_FL %prec OP_NOT
-	| '-' ENTERO %prec OP_NOT
+	| '-' ID %prec OP_NOT /* TODO GG: Verificar si esta regla es necesaria, no entiendo el sentido. */
+	| '-' CONST_FL %prec OP_NOT /* TODO GG: Verificar si esta regla es necesaria, no entiendo el sentido. */
+	| '-' ENTERO %prec OP_NOT /* TODO GG: Verificar si esta regla es necesaria, no entiendo el sentido. */
 ;
 
 %%
@@ -173,15 +186,22 @@ int main(int argc, char *argv[])
 	  
     st = newStack();
 	stIdType = newStack();
+
+	init_queue(&queue);
   	
   	yydebug = 1;
 
   	yyin = pf;
 	yyparse();
   	
+	printf("Polaca Inversa:\n");
+	print_queue(&queue);
+
   	fclose(pf);
 	clear(st);
 	clear(stIdType);
+	free_queue(&queue);
+
   	return 0;
 }
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <stdbool.h>
 #include "y.tab.h"
 #include "symbol_table.h"
 #include "symbol_table.c"
@@ -50,15 +51,38 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 ">="		{ return OP_GE; }
 "<="		{ return OP_LE; }
 "!="        { return OP_NE; }
-"=="		{ return OP_EQ; }			
-"true"		|
-"false"		{ return CONST_BOOL; }
+"=="		{ return OP_EQ; }
 "&&"		|
 "AND"		{ return OP_AND; }
 "||"		|
 "OR"		{ return OP_OR; }
 "!"			|
 "NOT"   	{ return OP_NOT; }
+"true"      |
+"false"     |
+"TRUE"      |
+"FALSE"     {    
+    bool aux;
+
+    if (0 == strcmp(yytext, "true") || 0 == strcmp(yytext, "TRUE"))
+        aux = true;
+    else if (0 == strcmp(yytext, "false") || 0 == strcmp(yytext, "FALSE"))
+        aux = false;
+    else
+        yyerror("Error. Valor booleano invalido.\n");
+
+    yylval.bool_val = aux;
+
+    symrec *s;
+    s = getsym(aux ? "true" : "false");
+    
+    if (s == 0)
+    {
+        putsym(aux ? "true" : "false", DT_BOOL);
+    }
+
+    return CONST_BOOLEAN;
+}
 "WHILE" 	{ return T_WHILE; }
 "ENDWHILE"  { return T_ENDWHILE; }
 "IF"     	{ return T_IF; }
@@ -138,7 +162,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
 {CONST_INT} { 
     int aux;
     sscanf(yytext,"%d",&aux);
-    yylval.val = aux;
+    yylval.intval = aux;
 
     if (isValidInt(aux) == 1)
     {
@@ -157,6 +181,7 @@ COMENTARIOS             -\/{CADENA}\/-|-\/{CADENA}-\/{CADENA}\/-{CADENA}\/-|-\/-
         yyerror("Error. Entero fuera de rango.\n");
     }
 }
+
 <<EOF>> {
     if (createSymbolTable() == 0)
     {
