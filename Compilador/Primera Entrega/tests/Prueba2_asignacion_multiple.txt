@@ -1,0 +1,5 @@
+DEFVAR
+	p1, p2 : INT
+ENDDEFVAR
+
+p1 = p2 = 2

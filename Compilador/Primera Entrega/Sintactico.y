@@ -7,6 +7,8 @@
 #include "symbol_table.h"
 #include "queue.h"
 #include "queue.c"
+#include "string_tools.h"
+#include "string_tools.c"
 #include "stack.c"
 
 #define YYDEBUG 1
@@ -20,6 +22,10 @@ symrec *sym_table;
 stack_t *st;
 stack_t *stIdType;
 t_queue queue;
+t_queue pos_queue;
+int current_pos;
+char pos_str[30];
+int func_avg_terms_counter = 0;
 
 // stuff from flex that bison needs to know about:
 extern int yylex();
@@ -50,7 +56,6 @@ void verifyTypeOp(void );
 %token T_INT 
 %token T_STRING 
 %token T_FLOAT
-%token OP_COMPARADOR
 %token OP_AND OP_OR OP_NOT
 %token OP_GE OP_LE OP_NE OP_EQ  
 %token <str_val>ID
@@ -84,17 +89,22 @@ sentencia: if
 	| asignacion
 ;
 
-read: T_READ ID;
+read: T_READ ID { enqueue(&queue, $2); enqueue(&queue, "READ"); };
 
-write: T_WRITE ID { checkExist($2); }
-	| T_WRITE CONST_STR
+write: T_WRITE ID { checkExist($2); enqueue(&queue, $2); enqueue(&queue, "WRITE"); }
+	| T_WRITE CONST_STR { enqueue(&queue, yylval.str_val); enqueue(&queue, "WRITE"); }
 ;
 
-avg: T_AVG '(' '[' lista_expr ']' ')'
+avg: T_AVG '(' '[' lista_expr ']' ')' { 
+		char str[16];
+		sprintf(str, "%d", func_avg_terms_counter); 
+		enqueue(&queue, str); 
+		enqueue(&queue, "/"); 
+	}
 ;
 
-lista_expr: lista_expr ','  expresion
-	| expresion
+lista_expr: lista_expr ','  expresion { func_avg_terms_counter++; enqueue(&queue, "+"); }
+	| expresion { func_avg_terms_counter++; }
 ;
 
 bloque_def: sentencia_def
@@ -109,51 +119,94 @@ asignacion_def: lista_ids ':' T_FLOAT { setType(DT_FLOAT);}
 	| lista_ids ':' T_INT { setType(DT_INT);}
 ;
 
-lista_ids: lista_ids ',' ID { push(st,$3);}
-	| ID { push(st,$1);}
+lista_ids: lista_ids ',' ID { push(st,$3); }
+	| ID { push(st,$1); }
 ; 
 
 defvar: T_DEFVAR bloque_def T_ENDDEFVAR
 ;
 
-while : T_WHILE '(' expresion ')' bloque T_ENDWHILE;
+while : T_WHILE '(' condicion ')' bloque T_ENDWHILE;
 
-if : T_IF '(' expresion ')' bloque T_ELSE bloque T_ENDIF
-	| T_IF '(' expresion ')' bloque T_ENDIF
+if : 
+	/*T_IF '(' condicion ')' { 
+		enqueue(&queue, "CMP"); 
+		enqueue(&queue, "BGE"); 
+		enqueue(&queue, ""); 
+		current_pos = queue.last->pos; 
+		enqueue(&pos_queue, itoa(current_pos, 10)); 
+	} bloque { 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str); 
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos, 10)); 
+	} T_ENDIF
+	
+	| T_IF '(' condicion ')' bloque T_ELSE { 
+		enqueue(&queue, "BI"); 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str); 
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos, 10)+1); 
+		enqueue(&pos_queue, itoa(current_pos, 10));
+	} bloque { 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str);
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos, 10)); 
+	} T_ENDIF*/ // TODO ver como resolver el conflicto de Shift / Reduce del IF cuando se ponen AS en el medio.
+	T_IF '(' condicion ')' { 
+		enqueue(&queue, "CMP"); 
+		enqueue(&queue, "BGE"); 
+		enqueue(&queue, ""); 
+		current_pos = queue.last->pos; 
+		enqueue(&pos_queue, itoa(current_pos, 10)); 
+	} bloque endif
 ;
 
-lista_ids_asig: lista_ids_asig '=' ID { push(st,$3);}
-	| ID { push(st,$1);}
-; 
+endif:
+	{ 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str); 
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos+1, 10)); 
+	} T_ENDIF
+	| T_ELSE { 
+		enqueue(&queue, "BI"); 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str); 
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos+2, 10)); 
+		enqueue(&pos_queue, itoa(current_pos, 10));
+	} bloque 
+	{ 
+		current_pos = queue.last->pos; 
+		dequeue(&pos_queue, pos_str);
+		set_in_pos_in_queue(&queue, atoi(pos_str), itoa(current_pos+1, 10)); 
+	} T_ENDIF
 
-asignacion: lista_ids_asig '=' CONST_STR  { checkListIDExist(); }
-	| lista_ids_asig '=' expresion { checkListIDExist(); }
+lista_ids_asig: lista_ids_asig '=' ID { push(st,$3); enqueue(&queue, $3); enqueue(&queue, "="); }
+	| ID { push(st,$1); enqueue(&queue, $1); }
+;
+
+asignacion: lista_ids_asig '=' CONST_STR  { checkListIDExist(); enqueue(&queue, yylval.str_val); enqueue(&queue, "="); }
+	| lista_ids_asig '=' expresion { checkListIDExist(); enqueue(&queue, "="); }
 ;		
 
-expresion:
-	termino// { verifyTypeOp(); }
-	| expresion '-' termino
-   	| expresion '+' termino
-   	| expresion '<' termino
-   	| expresion '>' termino
-   	| expresion OP_GE termino
-   	| expresion OP_LE termino
-   	| expresion OP_NE termino
-   	| expresion OP_NE CONST_STR
-   	| expresion OP_EQ termino
-   	| expresion OP_OR termino
-   	| expresion OP_COMPARADOR termino
+condicion:
+	cond_termino// { verifyTypeOp(); }
+   	| condicion '<' cond_termino { enqueue(&queue, "<"); }
+   	| condicion '>' cond_termino { enqueue(&queue, ">"); }
+   	| condicion OP_GE cond_termino { enqueue(&queue, ">="); }
+   	| condicion OP_LE cond_termino { enqueue(&queue, "<="); }
+   	| condicion OP_NE cond_termino { enqueue(&queue, "!="); }
+   	| condicion OP_NE CONST_STR { enqueue(&queue, yylval.str_val); enqueue(&queue, "!="); }
+   	| condicion OP_EQ cond_termino { enqueue(&queue, "=="); }
+   	| condicion OP_OR cond_termino { enqueue(&queue, "||"); }
+;	
+
+cond_termino: 
+	cond_factor
+	| cond_termino OP_AND cond_factor { enqueue(&queue, "&&"); }
 ;
 
-termino: 
-	factor
-	| termino '*' factor
-	| termino '/' factor
-	| termino OP_AND factor
-;
-
-factor: 
-	ID //{ checkExist($1);} push(stIdType,$1); }
+cond_factor: 
+	ID { enqueue(&queue, $1); }
 	| ENTERO  { 
 		char str[16];
 		sprintf(str, "%d", yylval.intval); 
@@ -165,6 +218,32 @@ factor:
 		enqueue(&queue, str); 
 	}
 	| CONST_BOOLEAN { enqueue(&queue, ($1 ? "true" : "false")); }
+;
+
+expresion:
+	termino// { verifyTypeOp(); }
+	| expresion '-' termino { enqueue(&queue, "-"); }
+   	| expresion '+' termino { enqueue(&queue, "+"); }
+;
+
+termino: 
+	factor
+	| termino '*' factor { enqueue(&queue, "*"); }
+	| termino '/' factor { enqueue(&queue, "/"); }
+;
+
+factor: 
+	ID { enqueue(&queue, $1); }
+	| ENTERO  { 
+		char str[16];
+		sprintf(str, "%d", yylval.intval); 
+		enqueue(&queue, str); 
+	}
+	| CONST_FL { 
+		char str[16];
+		sprintf(str, "%.2f", yylval.val); 
+		enqueue(&queue, str); 
+	}
 	| avg
 	| '(' expresion ')'
 	| '-' ID %prec OP_NOT /* TODO GG: Verificar si esta regla es necesaria, no entiendo el sentido. */
@@ -188,6 +267,7 @@ int main(int argc, char *argv[])
 	stIdType = newStack();
 
 	init_queue(&queue);
+	init_queue(&pos_queue);
   	
   	yydebug = 1;
 
@@ -196,11 +276,13 @@ int main(int argc, char *argv[])
   	
 	printf("Polaca Inversa:\n");
 	print_queue(&queue);
+	pretty_print_queue(&queue);
 
   	fclose(pf);
 	clear(st);
 	clear(stIdType);
 	free_queue(&queue);
+	free_queue(&pos_queue);
 
   	return 0;
 }

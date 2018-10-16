@@ -13,4 +13,4 @@ l.o: Lexico.l y.o
 
 .PHONY: clean
 clean:
-	-rm -rf *.o parser *.yy.c *.tab.c *.tab.h *.dot *.output ts.txt
+	-rm -rf *.o parser *.yy.c *.tab.c *.tab.h *.dot *.output ts.txt rpn.txt

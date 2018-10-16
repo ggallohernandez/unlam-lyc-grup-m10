@@ -3,6 +3,7 @@
 void init_queue(t_queue *p)
 {
 	p->first = p->last = NULL;
+	p->counter = 0;
 }
 
 void enqueue(t_queue *p, char *d)
@@ -22,6 +23,8 @@ void enqueue(t_queue *p, char *d)
 		p->last->next = n;
 	
 	p->last = n;
+
+	n->pos = p->counter++;
 }
 
 void dequeue(t_queue *p, char *d)
@@ -32,8 +35,26 @@ void dequeue(t_queue *p, char *d)
 	
 	if (p->first == NULL)
 		p->last = NULL;
-	
+
 	free(aux);
+
+	p->counter--;
+}
+
+void set_in_pos_in_queue(t_queue *p, int pos, char *d)
+{
+	if (is_queue_empty(p))
+		return;
+
+	if (pos > p->counter)
+		return;
+
+	t_node *aux = p->first;
+
+	for (int i = 0; i < pos; i++)
+		aux = aux->next;
+
+	strcpy(aux->info, d);
 }
 
 void top_queue(t_queue *p, char *d)
@@ -68,6 +89,99 @@ void print_queue(t_queue *p)
 	}
 }
 
+void pretty_print_queue(t_queue *p)
+{
+	FILE *pf; 
+	pf = fopen("rpn.txt","w"); 
+
+	t_node *aux;
+
+	if (is_queue_empty(p))
+		return;
+
+	aux = p->first;
+
+	fprintf(pf, "--");
+
+	while(aux)
+	{
+		fprintf(pf, "------------------------------");
+
+		if (aux->next)
+			fprintf(pf, "---");
+		else 
+			fprintf(pf, "--\n");
+
+		aux = aux->next;
+	}
+
+	aux = p->first;
+
+	fprintf(pf, "| ");
+
+	while(aux)
+	{
+		fprintf(pf, "%-15d%-15p", aux->pos, (void *) aux);
+
+		if (aux->next)
+			fprintf(pf, " | ");
+		else 
+			fprintf(pf, " |\n");
+
+		aux = aux->next;
+	}
+
+	aux = p->first;
+
+	fprintf(pf, "--");
+
+	while(aux)
+	{
+		fprintf(pf, "------------------------------");
+
+		if (aux->next)
+			fprintf(pf, "---");
+		else 
+			fprintf(pf, "--\n");
+
+		aux = aux->next;
+	}
+
+	aux = p->first;
+
+	fprintf(pf, "| ");
+
+	while(aux)
+	{
+		fprintf(pf, "%-30s", aux->info);
+
+		if (aux->next)
+			fprintf(pf, " | ");
+		else 
+			fprintf(pf, " |\n");
+
+		aux = aux->next;
+	}
+
+	aux = p->first;
+
+	fprintf(pf, "--");
+
+	while(aux)
+	{
+		fprintf(pf, "------------------------------");
+
+		if (aux->next)
+			fprintf(pf, "---");
+		else 
+			fprintf(pf, "--\n");
+
+		aux = aux->next;
+	}
+
+	fclose(pf); 
+}
+
 void free_queue(t_queue *p)
 {
 	t_node *aux;
@@ -81,4 +195,5 @@ void free_queue(t_queue *p)
 	}
 
 	p->last = NULL;
+	p->counter = 0;
 }
