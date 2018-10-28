@@ -19,8 +19,8 @@ char *yytext;
 
 /* The symbol table: a chain of 'struct symrec'.  */
 symrec *sym_table;
-stack_t *st;
-stack_t *stIdType;
+m10_stack_t *st;
+m10_stack_t *stIdType;
 t_queue queue;
 t_queue pos_queue;
 int current_pos;

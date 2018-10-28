@@ -2,20 +2,20 @@
 #include <string.h>
 
 
-struct stack_entry {
+struct m10_stack_entry {
   char *data;
-  struct stack_entry *next;
+  struct m10_stack_entry *next;
 };
 
-struct stack_t
+struct m10_stack_t
 {
-  struct stack_entry *head;
+  struct m10_stack_entry *head;
   size_t stackSize; 
 };
 
-struct stack_t *newStack(void)
+struct m10_stack_t *newStack(void)
 {
-  struct stack_t *stack = malloc(sizeof *stack);
+  struct m10_stack_t *stack = malloc(sizeof *stack);
   if (stack)
   {
     stack->head = NULL;
@@ -25,15 +25,15 @@ struct stack_t *newStack(void)
 };
 
 char *copyString(char *);
-void push(struct stack_t *, char *value);
-char *top(struct stack_t *);
-void pop(struct stack_t *);
-void clear (struct stack_t *);
-void destroyStack(struct stack_t **);
+void push(struct m10_stack_t *, char *value);
+char *top(struct m10_stack_t *);
+void pop(struct m10_stack_t *);
+void clear (struct m10_stack_t *);
+void destroyStack(struct m10_stack_t **);
 
-typedef struct stack_t stack_t;
-extern stack_t *st;
-extern stack_t *stIdType;
+typedef struct m10_stack_t m10_stack_t;
+extern m10_stack_t *st;
+extern m10_stack_t *stIdType;
 
 char *copyString(char *str)
 {
@@ -43,9 +43,9 @@ char *copyString(char *str)
   return tmp;
 }
 
-void push(struct stack_t *theStack, char *value)
+void push(struct m10_stack_t *theStack, char *value)
 {
-  struct stack_entry *entry = malloc(sizeof *entry); 
+  struct m10_stack_entry *entry = malloc(sizeof *entry); 
   if (entry)
   {
     entry->data = copyString(value);
@@ -59,7 +59,7 @@ void push(struct stack_t *theStack, char *value)
   }
 }
 
-char *top(struct stack_t *theStack)
+char *top(struct m10_stack_t *theStack)
 {
   if (theStack && theStack->head)
     return theStack->head->data;
@@ -67,11 +67,11 @@ char *top(struct stack_t *theStack)
     return NULL;
 }
 
-void pop(struct stack_t *theStack)
+void pop(struct m10_stack_t *theStack)
 {
   if (theStack->head != NULL)
   {
-    struct stack_entry *tmp = theStack->head;
+    struct m10_stack_entry *tmp = theStack->head;
     theStack->head = theStack->head->next;
     free(tmp->data);
     free(tmp);
@@ -79,13 +79,13 @@ void pop(struct stack_t *theStack)
   }
 }
 
-void clear (struct stack_t *theStack)
+void clear (struct m10_stack_t *theStack)
 {
   while (theStack->head != NULL)
     pop(theStack);
 }
 
-void destroyStack(struct stack_t **theStack)
+void destroyStack(struct m10_stack_t **theStack)
 {
   clear(*theStack);
   free(*theStack);
